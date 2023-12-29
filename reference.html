@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tetris Base</title>
+<style>
+table {
+	border : 1px solid blue; 
+	border-collapse : collapse;
+}
+td {
+	border : 1px solid lightgray;
+	width : 50px;
+	height : 50px;
+	padding : 0px;
+}
+</style>
+<script>
+	function Block(x, y, color) {
+		this.x = x;
+		this.y = y;
+		this.color = color;
+
+		// 필요한 메소드 삽입하세요.
+		this.draw = function () {
+			tds[x*10+y].style.backgroundColor = this.color;
+		}
+	}
+
+	var tds = null;
+	var blockLoc = 0;
+	var blockColor = null;
+	var timerID =  null;
+	var blockArray = null;
+	window.focus();
+
+	function init() { 
+		// 10x10 2차원 배열 만들기 
+		// 블록 배열 생성 및 초기화
+		blockArray = new Array(10);		
+		for(let i=0; i<10; i++) {
+			blockArray[i] = new Array(10);
+			for(let j=0; j<10; j++)
+				blockArray[i][j] = null; // 테스트 시에 3으로 초기화 
+		}
+
+		// 생성된 배열 출력하여 테스트  
+		/* 
+		var str="";
+		for(let i=0; i<10; i++) {
+			for(let j=0; j<10; j++)
+				str += blockArray[i][j] + " ";
+			str += "\n";
+		}
+
+		alert(str);
+		*/
+	}
+
+	window.onload = function () {
+		init();
+		tds = document.getElementsByTagName("td");		
+		tds[blockLoc].style.backgroundColor = "skyblue";
+
+
+		// timer set
+		timerID = setInterval("moveDown()",300);
+	}
+
+	window.onkeydown = function (e) {
+		if(e.key == "ArrowRight") 
+			moveRight();
+		else if(e.key == "ArrowLeft") 
+			moveLeft();		
+	}
+	function moveRight() {
+		// 작성할 것 
+	}
+	function moveLeft() {
+		// 작성할 것 		
+	}
+	function moveDown() {
+
+		// 수정되어야 함
+		if(canDown()) {
+			tds[blockLoc].style.backgroundColor = "white";			
+			blockLoc += 10;
+			tds[blockLoc].style.backgroundColor = "skyblue";
+		}
+		else {
+			// 더 이상 내려 갈 수 없는 경우, 블록 객체를 배열에 삽입함
+			let i = Math.floor(blockLoc/10);
+			let j = blockLoc%10;
+	
+			blockArray[i][j] = new Block(i,j, "skyblue");
+			blockArray[i][j].draw();
+			startNew();
+		}
+	}	
+
+	function startNew() {
+		// new start
+		blockLoc = 0;
+		tds[blockLoc].style.backgroundColor = "skyblue";
+	}
+
+	function canDown() {
+		// 수정되어야 함.
+		// 현재는 맨 바닥인지만 체그해게 되어 있음
+		if(blockLoc >= 90) 
+			return false;
+		else
+			return true;
+	}
+
+	function overGame() {
+		if(timerID != null) {
+			clearInterval(timerID);
+			timerID = null;
+			alert("Game Over!!!!");
+		}
+	}
+</script>
+</head>
+<body>
+<h3>마우스 클릭 연습</h3>
+<hr>
+<table>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td>
+<td></td><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+</body>
+</html>
