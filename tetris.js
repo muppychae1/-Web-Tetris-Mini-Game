@@ -46,6 +46,8 @@ function init() {
         for(let j = 0; j<col ; j++)
             blockArray[i][j] = null;
     }
+
+    blockLoc = Math.floor(Math.random() * (col + 1));
 }
 
 window.onload = function() {
@@ -66,13 +68,11 @@ window.onkeydown = function (e) {
 }
 
 function moveRight() {
-
     if(canRight()) {
         blocks[blockLoc].style.backgroundColor = "white";		
         blockLoc += 1;
         blocks[blockLoc].style.backgroundColor = "skyblue";
     }
-
 }
 
 function moveLeft() {
@@ -83,31 +83,7 @@ function moveLeft() {
     }		
 }
 
-function canRight() {
-    let curPoint = getCurrentRowCol();
-    
-    // 벽인지 check + 공간이 있는지 check
-    if(curPoint.curCol+1 < col &&
-        blockArray[curPoint.curRow][curPoint.curCol+1] == null )
-        return true;
-    else 
-        return false;
-}
-
-function canLeft() {
-    let curPoint = getCurrentRowCol();
-    
-    // 벽인지 check + 공간이 있는지 check
-    if(curPoint.curCol-1 >= 0 &&
-        blockArray[curPoint.curRow][curPoint.curCol-1] == null )
-        return true;
-    else 
-        return false;
-}
-
-
 function moveDown() {
-    // 수정되어야 함
     if(canDown()) {
         blocks[blockLoc].style.backgroundColor = "white";		
         blockLoc += col;
@@ -115,6 +91,10 @@ function moveDown() {
     }
     else {
         // 더 이상 내려 갈 수 없는 경우, 블록 객체를 배열에 삽입함
+
+        //TODO: 블록 객체를 배열에 삽입하기 전, 3개 이상의 블록이 모였는지 확인.
+
+
         let i = Math.floor(blockLoc/col); // 소수점 이하 버림
         let j = blockLoc%col;
 
@@ -151,4 +131,26 @@ function canDown() {
         return false;
     else 
         return true;
+}
+
+function canRight() {
+    let curPoint = getCurrentRowCol();
+    
+    // 벽인지 check + 공간이 있는지 check
+    if(curPoint.curCol+1 < col &&
+        blockArray[curPoint.curRow][curPoint.curCol+1] == null )
+        return true;
+    else 
+        return false;
+}
+
+function canLeft() {
+    let curPoint = getCurrentRowCol();
+    
+    // 벽인지 check + 공간이 있는지 check
+    if(curPoint.curCol-1 >= 0 &&
+        blockArray[curPoint.curRow][curPoint.curCol-1] == null )
+        return true;
+    else 
+        return false;
 }
