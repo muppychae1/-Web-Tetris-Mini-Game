@@ -1,4 +1,4 @@
-let row = 10 // 행
+let row = 7 // 행
 let col = 5 // 열
 let blocks = null;
 let blockLoc = 0;
@@ -76,7 +76,11 @@ function moveRight() {
 }
 
 function moveLeft() {
-    // 작성할 것 		
+    if(canLeft()) {
+        blocks[blockLoc].style.backgroundColor = "white";		
+        blockLoc -= 1;
+        blocks[blockLoc].style.backgroundColor = "skyblue";
+    }		
 }
 
 function canRight() {
@@ -89,6 +93,18 @@ function canRight() {
     else 
         return false;
 }
+
+function canLeft() {
+    let curPoint = getCurrentRowCol();
+    
+    // 벽인지 check + 공간이 있는지 check
+    if(curPoint.curCol-1 >= 0 &&
+        blockArray[curPoint.curRow][curPoint.curCol-1] == null )
+        return true;
+    else 
+        return false;
+}
+
 
 function moveDown() {
     // 수정되어야 함
