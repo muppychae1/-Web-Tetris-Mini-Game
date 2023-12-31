@@ -106,7 +106,7 @@ function moveDown() {
 
 function startNew() {
     // new start
-    blockLoc = 0;
+    blockLoc = Math.floor(Math.random() * (col + 1));
     blocks[blockLoc].style.backgroundColor = "skyblue";
 }
 
