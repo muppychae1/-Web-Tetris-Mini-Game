@@ -9,6 +9,9 @@ let table = null;
 let curRow; // 현재 행
 let curCol; // 현재 열
 
+let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];
+let blockColor = null;
+
 class Block {
     constructor(x, y, color) {
         this.x = x;
@@ -55,7 +58,8 @@ window.onload = function() {
     init();
 
     blocks = document.getElementsByClassName("bgBlock");
-    blocks[blockLoc].style.backgroundColor = "skyblue";
+    blockColor = colors[Math.floor(Math.random() * colors.length)];
+    blocks[blockLoc].style.backgroundColor = blockColor;
 
     timerID = setInterval("moveDown()", 300);
 }
@@ -71,7 +75,7 @@ function moveRight() {
     if(canRight()) {
         blocks[blockLoc].style.backgroundColor = "white";		
         blockLoc += 1;
-        blocks[blockLoc].style.backgroundColor = "skyblue";
+        blocks[blockLoc].style.backgroundColor = blockColor;
     }
 }
 
@@ -79,7 +83,7 @@ function moveLeft() {
     if(canLeft()) {
         blocks[blockLoc].style.backgroundColor = "white";		
         blockLoc -= 1;
-        blocks[blockLoc].style.backgroundColor = "skyblue";
+        blocks[blockLoc].style.backgroundColor = blockColor;
     }		
 }
 
@@ -87,7 +91,7 @@ function moveDown() {
     if(canDown()) {
         blocks[blockLoc].style.backgroundColor = "white";		
         blockLoc += col;
-        blocks[blockLoc].style.backgroundColor = "skyblue";
+        blocks[blockLoc].style.backgroundColor = blockColor;
     }
     else {
         // 더 이상 내려 갈 수 없는 경우, 블록 객체를 배열에 삽입함
@@ -98,7 +102,7 @@ function moveDown() {
         let i = Math.floor(blockLoc/col); // 소수점 이하 버림
         let j = blockLoc%col;
 
-        blockArray[i][j] = new Block(i,j, "skyblue");
+        blockArray[i][j] = new Block(i,j, blockColor);
         blockArray[i][j].draw();
         startNew();
     }
@@ -107,7 +111,9 @@ function moveDown() {
 function startNew() {
     // new start
     blockLoc = Math.floor(Math.random() * (col + 1));
-    blocks[blockLoc].style.backgroundColor = "skyblue";
+    blockColor = colors[Math.floor(Math.random() * colors.length)];
+
+    blocks[blockLoc].style.backgroundColor = blockColor;
 }
 
 // 현재 블록의 row, col
