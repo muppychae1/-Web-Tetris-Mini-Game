@@ -66,24 +66,28 @@ window.onkeydown = function (e) {
 }
 
 function moveRight() {
-    // check 1. is there block on block's right side?
+
     if(canRight()) {
-        // TODO: right 로직 구현
-        
+        blocks[blockLoc].style.backgroundColor = "white";		
+        blockLoc += 1;
+        blocks[blockLoc].style.backgroundColor = "skyblue";
     }
-    
+
+}
+
+function moveLeft() {
+    // 작성할 것 		
 }
 
 function canRight() {
     let curPoint = getCurrentRowCol();
     
-    if(blockArray[curPoint.curRow][curPoint.curCol+1] == null)
+    // 벽인지 check + 공간이 있는지 check
+    if(curPoint.curCol+1 < col &&
+        blockArray[curPoint.curRow][curPoint.curCol+1] == null )
         return true;
-    else return false;
-}
-
-function moveLeft() {
-    // 작성할 것 		
+    else 
+        return false;
 }
 
 function moveDown() {
