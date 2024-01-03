@@ -9,8 +9,8 @@ let table = null;
 let curRow; // 현재 행
 let curCol; // 현재 열
 
-let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
-// let colors = ["#F09EA7"];
+// let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
+let colors = ["#F09EA7", "#F6CA94", "#FAFABE"];
 let blockColor = null;
 
 class Block {
@@ -102,16 +102,62 @@ function moveDown() {
 
         blockArray[i][j] = new Block(i,j, blockColor);
         blockArray[i][j].draw();
-        startNew();
+        
 
         //TODO: 블록 객체를 배열에 삽입하기 전, 3개 이상의 블록이 모였는지 확인.
         checkMatchBlocks(i, j);
+
+        startNew();
     }
 }
 
 function BlockPosition(row, col) {
     this.row = row;
     this.col = col;
+}
+
+function removeBlocks(deleteBlockLoc) {
+
+    const changeColArray = new Array(COL).fill(false);
+
+    for(let i=0; i<deleteBlockLoc.length; i++){
+        let r = deleteBlockLoc[i].row;
+        let c = deleteBlockLoc[i].col;
+        blockArray[r][c] = null;
+
+        let newLoc = r*COL + c;
+        blocks[newLoc].style.backgroundColor = "white";
+
+        changeColArray[deleteBlockLoc[i].col] = true;
+    }
+
+    // for(let i=0; i<COL; i++) {
+    //     if(!changeColArray[i]) continue;
+
+    //     let nullLoc = null;
+
+    //     for(let j=ROW-1; j>=0; j--){
+    //         if(blockArray[j][i] == null && nullLoc == null) {
+    //             nullLoc = new BlockPosition(j, i);
+    //         }
+    //         else if(blockArray[j][i] != null && nullLoc != null) {
+    //             let newR = nullLoc.row;
+    //             let newC = nullLoc.col;
+    //             let newColor = blockArray[j][i].color;
+
+    //             blockArray[newR][newC] = new Block(newR, newC, newColor);
+
+    //             // let newLoc = j*COL + (i+1);
+    //             // blocks[newLoc].style.backgroundColor = "white";
+
+    //             let newLoc = newR*COL + (newC+1);
+    //             blocks[newLoc].style.backgroundColor = newColor;
+
+    //             nullLoc = new BlockPosition(j, i);
+    //         }
+    //     }
+    // }
+    
 }
 
 function checkMatchBlocks(curR, curC) {
@@ -130,11 +176,14 @@ function checkMatchBlocks(curR, curC) {
     // 대각선2
     deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [1,-1], [1,-1]);
     
-    
+    for(let i =0; i<deleteBlockLoc.length; i++){
+        console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
+    }
+    console.log(`*****${deleteBlockLoc.length}******`)
 
-    // for(let i =0; i<deleteBlockLoc.length; i++){
-    //     console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
-    // }
+    if(deleteBlockLoc.length >= 3)
+        removeBlocks(deleteBlockLoc);
+
 }
 
 function isRange(r, c) {
