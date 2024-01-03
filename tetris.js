@@ -9,8 +9,8 @@ let table = null;
 let curRow; // 현재 행
 let curCol; // 현재 열
 
-// let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
-let colors = ["#F09EA7"];
+let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
+// let colors = ["#F09EA7"];
 let blockColor = null;
 
 class Block {
@@ -121,11 +121,20 @@ function checkMatchBlocks(curR, curC) {
     visited[curR][curC] = true;
     deleteBlockLoc.push(new BlockPosition(curR, curC));
 
-    deleteBlockLoc = checkHorizontal(curR, curC, visited, deleteBlockLoc);
+    // 가로
+    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [0,0], [-1,1]);
+    // 세로
+    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [0,0]);
+    // 대각선1
+    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [-1,1]);
+    // 대각선2
+    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [1,-1], [1,-1]);
     
-    for(let i =0; i<deleteBlockLoc.length; i++){
-        console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
-    }
+    
+
+    // for(let i =0; i<deleteBlockLoc.length; i++){
+    //     console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
+    // }
 }
 
 function isRange(r, c) {
@@ -135,19 +144,19 @@ function isRange(r, c) {
 }
 
 // 수평 확인
-function checkHorizontal(curR, curC, visited, deleteBlockLoc) {
-    direc = [-1,1];
+function checkBlocksDirection(curR, curC, visited, deleteBlockLoc, dr, dc) {
     // 왼쪽, 오른쪽 확인 
-    for(let i=0; i<direc.length; i++){
-        let newC = curC + direc[i];
+    for(let i=0; i<dr.length; i++){
+        let newR = curR + dr[i]
+        let newC = curC + dc[i];
         // 같은 색상의 블록이 있을 때
-        if(isRange(curR, newC) && !visited[curR][newC]
-        && blockArray[curR][newC]!=null && blockArray[curR][newC].color == blockColor) {
+        if(isRange(newR, newC) && !visited[newR][newC]
+        && blockArray[newR][newC]!=null && blockArray[newR][newC].color == blockColor) {
 
-            visited[curR][newC] = true;
-            deleteBlockLoc.push(new BlockPosition(curR, newC));
+            visited[newR][newC] = true;
+            deleteBlockLoc.push(new BlockPosition(newR, newC));
 
-            checkHorizontal(curR, newC, visited, deleteBlockLoc);
+            checkBlocksDirection(newR, newC, visited, deleteBlockLoc, dr, dc);
         }
     }
 
