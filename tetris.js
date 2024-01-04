@@ -135,13 +135,19 @@ function isRange(r, c) {
 }
 
 function removeMatchingBlocks() {
-    for(let i=0; i<ROW; i++){
-        for(let j=0; j<COL ; j++){
-            if(deleteBlock[i][j]) {
-                blockArray[i][j] = null;
-                blocks[i * COL + j].style.backgroundColor = "white";
+    for(let r=0; r<ROW; r++){
+        for(let c=0; c<COL ; c++){
+            if(deleteBlock[r][c]) {
+                blockArray[r][c] = null;
+                blocks[r * COL + c].style.backgroundColor = "white";
 
-                deleteBlock[i][j] = false;
+                for(let k=r; k>0 ; k--){
+                    blockArray[k][c] = blockArray[k-1][c];
+                    blocks[k * COL + c].style.backgroundColor = blocks[(k-1) * COL + c].style.backgroundColor;
+                    blocks[(k-1) * COL + c].style.backgroundColor = "white";
+                }
+
+                deleteBlock[r][c] = false;
             }
         }
     }
