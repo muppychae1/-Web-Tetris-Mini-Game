@@ -10,8 +10,10 @@ let curRow; // 현재 행
 let curCol; // 현재 열
 
 // let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
-let colors = ["#F09EA7", "#F6CA94", "#FAFABE"];
+let colors = ["#F09EA7", "#F6CA94"];
 let blockColor = null;
+
+let deleteBlock = new Array(ROW).fill(null).map(() => new Array(COL).fill(false));
 
 class Block {
     constructor(x, y, color) {
@@ -70,6 +72,8 @@ window.onkeydown = function (e) {
         moveRight();
     else if(e.key == "ArrowLeft") 
         moveLeft();		
+    else if(e.key == " ")
+        moveDirect();
 }
 
 function moveRight() {
@@ -86,6 +90,13 @@ function moveLeft() {
         blockLoc -= 1;
         blocks[blockLoc].style.backgroundColor = blockColor;
     }		
+}
+
+function moveDirect() {
+    console.log(`SpaceBar`)
+    if(checkDown()) {
+        // TODO: 아래로 내려갈 수 있는지 확인
+    }
 }
 
 function moveDown() {
@@ -105,7 +116,8 @@ function moveDown() {
         
 
         //TODO: 블록 객체를 배열에 삽입하기 전, 3개 이상의 블록이 모였는지 확인.
-        checkMatchBlocks(i, j);
+        // checkMatchBlocks(i, j);
+        checkMatchBlocks();
 
         startNew();
     }
@@ -114,6 +126,79 @@ function moveDown() {
 function BlockPosition(row, col) {
     this.row = row;
     this.col = col;
+}
+
+function isRange(r, c) {
+    if(r < 0 || r >= ROW || c < 0 || c >= COL ) 
+        return false;
+    else return true;
+}
+
+function removeMatchingBlocks() {
+    for(let i=0; i<ROW; i++){
+        for(let j=0; j<COL ; j++){
+            if(deleteBlock[i][j]) {
+                blockArray[i][j] = null;
+                blocks[i * COL + j].style.backgroundColor = "white";
+
+                deleteBlock[i][j] = false;
+            }
+        }
+    }
+}
+
+
+function checkMatch(row, col, visited, dr, dc){
+    let count = 0; // 3개 이상인치 check
+    let curColor = blockArray[row][col] ? blockArray[row][col].color : null;
+
+    visited = new Array(ROW).fill(null).map(() => new Array(COL).fill(false));
+    let deleteArray = new Array();
+
+    function check(r, c) {
+        if(!isRange(r,c) || visited[r][c] || blockArray[r][c] == null 
+        || blockArray[r][c].color != curColor ) {
+            return;
+        }
+        deleteArray.push([r,c]);
+        visited[r][c] = true;
+        count++;
+
+        check(r+dr, c+dc);
+    }
+
+    check(row, col);
+
+    if(count >= 3) {
+        for(let i=0; i<deleteArray.length; i++){
+            let row = deleteArray[i][0];
+            let col = deleteArray[i][1];
+            
+            deleteBlock[row][col] = true;
+        }
+        return true;
+    }
+    else return false;
+}
+
+function checkMatchBlocks() {
+    let visited = new Array(ROW).fill(null).map(() => new Array(COL).fill(false));
+
+    for(let i=0; i<ROW; i++){
+        for(let j=0; j<COL; j++){
+            if(blockArray[i][j] != null && !visited[i][j]) {
+                
+                let isHorizontalMatch = checkMatch(i, j, visited, 0, 1);
+                let isVerticalMatch = checkMatch(i, j, visited, 1, 0);
+                let isDiagonal1Match = checkMatch(i, j, visited, 1, 1);
+                let isDiagonal2Match = checkMatch(i, j, visited, 1, -1);
+
+                if(isHorizontalMatch || isVerticalMatch || isDiagonal1Match || isDiagonal2Match) {
+                    removeMatchingBlocks();
+                }
+            }
+        }
+    }
 }
 
 function removeBlocks(deleteBlockLoc) {
@@ -160,57 +245,52 @@ function removeBlocks(deleteBlockLoc) {
     
 }
 
-function checkMatchBlocks(curR, curC) {
-    const visited = new Array(ROW).fill(null).map(() => new Array(COL).fill(false));
-    let deleteBlockLoc = new Array();
+// function checkMatchBlocks(curR, curC) {
+//     const visited = new Array(ROW).fill(null).map(() => new Array(COL).fill(false));
+//     let deleteBlockLoc = new Array();
 
-    visited[curR][curC] = true;
-    deleteBlockLoc.push(new BlockPosition(curR, curC));
+//     visited[curR][curC] = true;
+//     deleteBlockLoc.push(new BlockPosition(curR, curC));
 
-    // 가로
-    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [0,0], [-1,1]);
-    // 세로
-    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [0,0]);
-    // 대각선1
-    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [-1,1]);
-    // 대각선2
-    deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [1,-1], [1,-1]);
+//     // 가로
+//     deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [0,0], [-1,1]);
+//     // 세로
+//     deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [0,0]);
+//     // 대각선1
+//     deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [-1,1], [-1,1]);
+//     // 대각선2
+//     deleteBlockLoc = checkBlocksDirection(curR, curC, visited, deleteBlockLoc, [1,-1], [1,-1]);
     
-    for(let i =0; i<deleteBlockLoc.length; i++){
-        console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
-    }
-    console.log(`*****${deleteBlockLoc.length}******`)
+//     for(let i =0; i<deleteBlockLoc.length; i++){
+//         console.log(`[${i}] (${deleteBlockLoc[i].row}, ${deleteBlockLoc[i].col})`)
+//     }
+//     console.log(`*****${deleteBlockLoc.length}******`)
 
-    if(deleteBlockLoc.length >= 3)
-        removeBlocks(deleteBlockLoc);
+//     if(deleteBlockLoc.length >= 3)
+//         removeBlocks(deleteBlockLoc);
 
-}
+// }
 
-function isRange(r, c) {
-    if(r < 0 || r >= ROW || c < 0 || c >= COL ) 
-        return false;
-    else return true;
-}
 
-// 수평 확인
-function checkBlocksDirection(curR, curC, visited, deleteBlockLoc, dr, dc) {
-    // 왼쪽, 오른쪽 확인 
-    for(let i=0; i<dr.length; i++){
-        let newR = curR + dr[i]
-        let newC = curC + dc[i];
-        // 같은 색상의 블록이 있을 때
-        if(isRange(newR, newC) && !visited[newR][newC]
-        && blockArray[newR][newC]!=null && blockArray[newR][newC].color == blockColor) {
+// // 수평 확인
+// function checkBlocksDirection(curR, curC, visited, deleteBlockLoc, dr, dc) {
+//     // 왼쪽, 오른쪽 확인 
+//     for(let i=0; i<dr.length; i++){
+//         let newR = curR + dr[i]
+//         let newC = curC + dc[i];
+//         // 같은 색상의 블록이 있을 때
+//         if(isRange(newR, newC) && !visited[newR][newC]
+//         && blockArray[newR][newC]!=null && blockArray[newR][newC].color == blockColor) {
 
-            visited[newR][newC] = true;
-            deleteBlockLoc.push(new BlockPosition(newR, newC));
+//             visited[newR][newC] = true;
+//             deleteBlockLoc.push(new BlockPosition(newR, newC));
 
-            checkBlocksDirection(newR, newC, visited, deleteBlockLoc, dr, dc);
-        }
-    }
+//             checkBlocksDirection(newR, newC, visited, deleteBlockLoc, dr, dc);
+//         }
+//     }
 
-    return deleteBlockLoc;
-}
+//     return deleteBlockLoc;
+// }
 
 function startNew() {
     // new start
