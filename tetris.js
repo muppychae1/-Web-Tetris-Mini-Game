@@ -3,6 +3,8 @@ let COL = 10 // 열
 let blocks = null;
 let blockLoc = 0;
 let timerID =  null;
+let totalScore = 0;
+const BLOCK_SCORE = 5;
 
 let table = null;
 
@@ -10,7 +12,8 @@ let curRow; // 현재 행
 let curCol; // 현재 열
 
 // let colors = ["#F09EA7", "#F6CA94", "#FAFABE", "#C1EBC0", "#C7CAFF", "#CDABEB", "#F6C2F3"];//
-let colors = ["#F09EA7", "#F6CA94"];
+let colors = ["#64FFFF", "#FF9899", "#FE9A02", "#DC0102", "#FEFF31"];
+let emptyColor = "rgba(0, 0, 0, 0)";
 let blockColor = null;
 
 let deleteArray = new Array();
@@ -30,6 +33,8 @@ class Block {
 
 function drawTable() {
     table = document.getElementsByTagName("table")[0];
+    table.style.borderColor = "blue";
+    table.style.backgroundColor = "rgba(255, 0, 0, 0)"
     
     for(let i=0; i<ROW; i++){
         let newRow = table.insertRow(-1); // table의 맨 마지막에 생성
@@ -40,12 +45,18 @@ function drawTable() {
 
             let blockDiv = document.createElement('div');
             blockDiv.className = 'bgBlock';
+            
             newCell.appendChild(blockDiv);
+            blockDiv.style.borderColor = "blue";
         }
     }
 }
 
 function init() {
+    bg = document.body.style.backgroundColor = "black";
+    drawTable();
+    totalScore = 0;
+
     // row x col 2차원 배열 만들기
     blockArray = new Array(ROW);
     for(let i = 0; i<ROW ; i++) {
@@ -58,7 +69,7 @@ function init() {
 }
 
 window.onload = function() {
-    drawTable();
+
     init();
 
     blocks = document.getElementsByClassName("bgBlock");
@@ -79,7 +90,7 @@ window.onkeydown = function (e) {
 
 function moveRight() {
     if(canRight()) {
-        blocks[blockLoc].style.backgroundColor = "white";		
+        blocks[blockLoc].style.backgroundColor = emptyColor;		
         blockLoc += 1;
         blocks[blockLoc].style.backgroundColor = blockColor;
     }
@@ -87,7 +98,7 @@ function moveRight() {
 
 function moveLeft() {
     if(canLeft()) {
-        blocks[blockLoc].style.backgroundColor = "white";		
+        blocks[blockLoc].style.backgroundColor = emptyColor;		
         blockLoc -= 1;
         blocks[blockLoc].style.backgroundColor = blockColor;
     }		
@@ -96,7 +107,7 @@ function moveLeft() {
 function moveDirect() {
     console.log(`SpaceBar`)
 
-    blocks[blockLoc].style.backgroundColor = "white";
+    blocks[blockLoc].style.backgroundColor = emptyColor;
     let newLoc = blockLoc;
     
     // 다음 행에 블럭이 있다면, 혹은 바닥이라면,
@@ -111,8 +122,6 @@ function moveDirect() {
         }
     }
 
-    // blocks[newLoc].style.backgroundColor = blockColor;
-
     let newR = Math.floor(newLoc/COL);
     let newC = newLoc%COL;
 
@@ -126,7 +135,7 @@ function moveDirect() {
 
 function moveDown() {
     if(canDown()) {
-        blocks[blockLoc].style.backgroundColor = "white";		
+        blocks[blockLoc].style.backgroundColor = emptyColor;		
         blockLoc += COL;
         blocks[blockLoc].style.backgroundColor = blockColor;
     }
@@ -159,22 +168,29 @@ function isRange(r, c) {
 
 
 function removeMatchingBlocks() {
+    let deleteBlockCount = 0;
+
     for(let r=0; r<ROW; r++){
         for(let c=0; c<COL ; c++){
             if(deleteBlock[r][c]) {
+                deleteBlockCount++;
                 blockArray[r][c] = null;
-                blocks[r * COL + c].style.backgroundColor = "white";
+
+                blocks[r * COL + c].style.backgroundColor = emptyColor;
 
                 for(let k=r; k>0 ; k--){
                     blockArray[k][c] = blockArray[k-1][c];
                     blocks[k * COL + c].style.backgroundColor = blocks[(k-1) * COL + c].style.backgroundColor;
-                    blocks[(k-1) * COL + c].style.backgroundColor = "white";
+                    blocks[(k-1) * COL + c].style.backgroundColor = emptyColor;
                 }
 
                 deleteBlock[r][c] = false;
             }
         }
     }
+
+    totalScore += BLOCK_SCORE * (deleteBlockCount - 2);
+    document.getElementById("totalScore").innerText = totalScore;
 
     return true;
 }
@@ -249,7 +265,7 @@ function checkMatchBlocks() {
 //         blockArray[r][c] = null;
 
 //         let newLoc = r*COL + c;
-//         blocks[newLoc].style.backgroundColor = "white";
+//         blocks[newLoc].style.backgroundColor = emptyColor;
 
 //         changeColArray[deleteBlockLoc[i].col] = true;
 //     }
