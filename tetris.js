@@ -96,9 +96,32 @@ function moveLeft() {
 function moveDirect() {
     console.log(`SpaceBar`)
 
-
-
+    blocks[blockLoc].style.backgroundColor = "white";
+    let newLoc = blockLoc;
     
+    // 다음 행에 블럭이 있다면, 혹은 바닥이라면,
+    while(true) {
+        newLoc += COL;
+        let newR = Math.floor(newLoc/COL);
+        let newC = newLoc%COL;
+        
+        if(newR >= ROW || blockArray[newR][newC] != null) {
+            newLoc -= COL;
+            break;
+        }
+    }
+
+    // blocks[newLoc].style.backgroundColor = blockColor;
+
+    let newR = Math.floor(newLoc/COL);
+    let newC = newLoc%COL;
+
+    blockArray[newR][newC] = new Block(newR,newC, blockColor);
+    blockArray[newR][newC].draw();
+
+    startNew();
+
+    checkMatchBlocks();
 }
 
 function moveDown() {
